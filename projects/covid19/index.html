@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <title>Covid-19 SIR Model with Vaccination</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+<body>
+  <div class="jumbotron text-center">
+  <h1>Covid-19 SIR Model with Vaccination</h1>
+  </div>
+  <div class="container-fluid text-center">
+  <form name="vaccine" action="index.html" method="get">
+  Vaccination rate (%):<br /> 
+    <input type="radio" name="rate" value="0" onclick="this.form.submit();">0
+    <input type="radio" name="rate" value="10" onclick="this.form.submit();">10 
+    <input type="radio" name="rate" value="20" onclick="this.form.submit();">20 
+    <input type="radio" name="rate" value="30" onclick="this.form.submit();">30 
+    <input type="radio" name="rate" value="40" onclick="this.form.submit();">40 
+    <input type="radio" name="rate" value="50" onclick="this.form.submit();">50 
+    <input type="radio" name="rate" value="60" onclick="this.form.submit();">60 
+    <input type="radio" name="rate" value="80" onclick="this.form.submit();">80 
+    <input type="radio" name="rate" value="90" onclick="this.form.submit();">90 
+    <input type="radio" name="rate" value="100" onclick="this.form.submit();">100 
+  </form>
+  </div>
+
+  <div id="chartS" style="width:auto; height:auto;"></div>
+  <div id="chartI" style="width:auto; height:auto;"></div>
+  <div id="chartR" style="width:auto; height:auto;"></div>
+
+
+
+  <div class="container-fluid text-center">
+    <div class="row">
+      Copyright &copy; 2021 <a href="https://data-miners.github.io/">Data-Miners RIG</a>.
+    </div>
+  </div>
+</body>
+
+<script>
+  // Visualization API with the 'corechart' package.
+  google.charts.load('visualization', { packages: ['corechart'] });
+  google.charts.setOnLoadCallback(drawLineChart);
+
+  var fileName = "data";
+
+  function drawLineChart() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const rate = urlParams.get('rate')
+    if (rate=='null') {
+      fileName = "data40".concat(".json");
+    } else {
+      fileName = fileName + rate.toString() + ".json";
+    }
+    console.log(rate);
+        $.ajax({
+            url: fileName,
+            dataType: "json",
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                //var arrSales = [['t', 'S', 'I', 'R']];                    
+                var arrS = [['t', 'S']];                    
+                var arrI = [['t', 'I']];                    
+                var arrR = [['t', 'R']];                    
+                $.each(data, function (index, value) {
+                    arrS.push([value.t, value.s]);
+                    arrI.push([value.t, value.i]);
+                    arrR.push([value.t, value.r]);
+                });
+
+                // Set chart Options.
+                var optionsS = {
+                    title: 'Susceptible Population',
+                    curveType: 'function',
+                    legend: {position:'none'},
+                    colors: ['orange'],
+                    //legend: { 
+                    //  position: 'bottom',
+                    //  textStyle: { color: '#555', fontSize: 14}
+                    //},
+                    vAxes: {
+                      0: {title: 'Proportion of Population'},
+                    },
+                    hAxes: {
+                      0: {title: 'Time (days)'}
+                    },
+                };
+                var figuresS = google.visualization.arrayToDataTable(arrS)
+                var chartS = new google.visualization.LineChart(document.getElementById('chartS'));
+                chartS.draw(figuresS, optionsS);
+
+                // Set chart Options.
+                var optionsI = {
+                    title: 'Infected Population',
+                    curveType: 'function',
+                    legend: {position:'none'},
+                    //legend: { 
+                    //  position: 'bottom',
+                    //  textStyle: { color: '#555', fontSize: 14}
+                    //},
+                    vAxes: {
+                      0: {title: 'Proportion of Population'},
+                    },
+                    hAxes: {
+                      0: {title: 'Time (days)'}
+                    },
+                };
+
+                var figuresI = google.visualization.arrayToDataTable(arrI)
+                var chartI = new google.visualization.LineChart(document.getElementById('chartI'));
+                chartI.draw(figuresI, optionsI);
+
+
+                // Set chart Options.
+                var optionsR = {
+                    title: 'Recovered Population',
+                    curveType: 'function',
+                    colors:['red'],
+                    legend:{position:'none'},
+                    //legend: { 
+                    //  position: 'bottom',
+                    //  textStyle: { color: '#555', fontSize: 14}
+                    //},
+                    vAxes: {
+                      0: {title: 'Proportion of Population'},
+                    },
+                    hAxes: {
+                      0: {title: 'Time (days)'}
+                    },
+                };
+
+                var figuresR = google.visualization.arrayToDataTable(arrR)
+                var chartR = new google.visualization.LineChart(document.getElementById('chartR'));
+                chartR.draw(figuresR, optionsR);
+            },
+
+
+
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert('Got an Error');
+            }
+        });
+  }
+</script>
+</html>
