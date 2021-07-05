@@ -16,7 +16,8 @@
   </div>
   <div class="container-fluid text-center">
   <form name="vaccine" action="index.html" method="get">
-  Vaccination rate (%):<br /> 
+  Vaccination rate (%): <div id="vaccRate"></div><br /> 
+    Choose Vaccination Rate:<br />
     <input type="radio" name="rate" value="0" onclick="this.form.submit();">0
     <input type="radio" name="rate" value="10" onclick="this.form.submit();">10 
     <input type="radio" name="rate" value="20" onclick="this.form.submit();">20 
@@ -54,12 +55,14 @@
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const rate = urlParams.get('rate')
-    if (rate=='null') {
-      fileName = "data40".concat(".json");
+    if (rate==null) {
+      fileName = "data20.json";
+      document.getElementById("vaccRate").innerHTML = "20";
     } else {
+      document.getElementById("vaccRate").innerHTML = rate.toString();
       fileName = fileName + rate.toString() + ".json";
     }
-    console.log(rate);
+    //console.log(rate);
         $.ajax({
             url: fileName,
             dataType: "json",
