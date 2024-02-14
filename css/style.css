@@ -38,15 +38,7 @@ body {
     color: #adb5bd;
 }
 
-/* Style the footer */
-.footer {
-    background-color: #343a40;
-    color: #ffffff;
-    padding: 20px 0;
-}
-
-
-
+/* Arrow to scroll back to the top of the page */
 .back-to-top {
     position: fixed;
     bottom: 40px;
